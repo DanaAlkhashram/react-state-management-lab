@@ -87,23 +87,25 @@ const App = () => {
     },
   ]);
 
-  // ✅ Handle Add Fighter
   const handleAddFighter = (fighter) => {
     if (money < fighter.price) {
-      console.log('Not enough money');
+      alert('Not enough money!');
       return;
     }
 
-    // Add to team
     setTeam(prev => [...prev, fighter]);
-
-    // Subtract money
     setMoney(prev => prev - fighter.price);
-
-    // Remove from zombieFighters
-    const updatedFighters = zombieFighters.filter(z => z.id !== fighter.id);
-    setZombieFighters(updatedFighters);
+    setZombieFighters(prev => prev.filter(z => z.id !== fighter.id));
   };
+
+  const handleRemoveFighter = (fighter) => {
+    setTeam(prev => prev.filter(member => member.id !== fighter.id));
+    setZombieFighters(prev => [...prev, fighter]);
+    setMoney(prev => prev + fighter.price);
+  };
+
+  const totalStrength = team.reduce((sum, m) => sum + m.strength, 0);
+  const totalAgility = team.reduce((sum, m) => sum + m.agility, 0);
 
   return (
     <div className="App">
@@ -119,7 +121,10 @@ const App = () => {
             <p>Price: ${fighter.price}</p>
             <p>Strength: {fighter.strength}</p>
             <p>Agility: {fighter.agility}</p>
-            <button onClick={() => handleAddFighter(fighter)}>
+            <button 
+              onClick={() => handleAddFighter(fighter)} 
+              disabled={money < fighter.price}
+            >
               Add to Team
             </button>
           </li>
@@ -127,17 +132,31 @@ const App = () => {
       </ul>
 
       <h2>🧑‍🤝‍🧑 My Team</h2>
-      <ul className="team">
-        {team.map((member, index) => (
-          <li key={index}>
-            {member.name} - Strength: {member.strength}, Agility: {member.agility}
-          </li>
-        ))}
-      </ul>
+
+      {team.length === 0 ? (
+        <p>Pick some team members!</p>
+      ) : (
+        <>
+          <ul className="team">
+            {team.map((member) => (
+              <li key={member.id} className="fighter-card">
+                <img src={member.img} alt={member.name} width="100" />
+                <h3>{member.name}</h3>
+                <p>Price: ${member.price}</p>
+                <p>Strength: {member.strength}</p>
+                <p>Agility: {member.agility}</p>
+                <button onClick={() => handleRemoveFighter(member)}>
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+          <h3>Total Strength: {totalStrength}</h3>
+          <h3>Total Agility: {totalAgility}</h3>
+        </>
+      )}
     </div>
   );
 };
 
 export default App;
-
-
