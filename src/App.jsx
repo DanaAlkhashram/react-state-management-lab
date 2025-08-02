@@ -95,13 +95,11 @@ const App = () => {
 
     setTeam(prev => [...prev, fighter]);
     setMoney(prev => prev - fighter.price);
-    setZombieFighters(prev => prev.filter(z => z.id !== fighter.id));
   };
 
   const handleRemoveFighter = (fighter) => {
-    setTeam(prev => prev.filter(member => member.id !== fighter.id));
-    setZombieFighters(prev => [...prev, fighter]);
-    setMoney(prev => prev + fighter.price);
+    setTeam(team.filter((member) => member.id !== fighter.id));
+    setMoney(money + fighter.price);
   };
 
   const totalStrength = team.reduce((sum, m) => sum + m.strength, 0);
@@ -110,9 +108,9 @@ const App = () => {
   return (
     <div className="App">
       <h1>Zombie Fighter Team Builder</h1>
-      <h3>💰 Money Left: ${money}</h3>
+      <h3>Money Left: ${money}</h3>
 
-      <h2>🧟 Available Fighters</h2>
+      <h2>Available Fighters</h2>
       <ul className="fighters">
         {zombieFighters.map((fighter) => (
           <li key={fighter.id} className="fighter-card">
@@ -121,17 +119,18 @@ const App = () => {
             <p>Price: ${fighter.price}</p>
             <p>Strength: {fighter.strength}</p>
             <p>Agility: {fighter.agility}</p>
-            <button 
-              onClick={() => handleAddFighter(fighter)} 
-              disabled={money < fighter.price}
+            <button
+              onClick={() => handleAddFighter(fighter)}
+              disabled={money < fighter.price || team.some(m => m.id === fighter.id)}
             >
               Add to Team
             </button>
+
           </li>
         ))}
       </ul>
 
-      <h2>🧑‍🤝‍🧑 My Team</h2>
+      <h2> My Team</h2>
 
       {team.length === 0 ? (
         <p>Pick some team members!</p>
